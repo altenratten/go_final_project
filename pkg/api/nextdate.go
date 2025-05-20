@@ -10,8 +10,9 @@ import (
 const DateFormat = "20060102"
 
 // afterNow — true, если date > now (без учёта времени)
-func afterNow(date, now time.Time) bool {
-	return date.After(now)
+func afterNow(now, t time.Time) bool {
+	now = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	return now.After(t)
 }
 
 // NextDate — вычисляет следующую дату задачи по правилу
@@ -40,6 +41,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 			if afterNow(startDate, now) {
 				break
 			}
+
 		}
 		return startDate.Format(DateFormat), nil
 
