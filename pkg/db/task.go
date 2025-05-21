@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type Task struct {
 	Repeat  string `json:"repeat"`
 }
 
+// AddTask — adds a task to the DB
 func AddTask(task *Task) (int64, error) {
 	var id int64
 	query := `
@@ -73,4 +75,37 @@ func parseSearchDate(input string) (string, error) {
 		return "", err
 	}
 	return t.Format("20060102"), nil
+}
+
+// GetTask — gets a task from the DB
+func GetTask(id string) (*Task, error) {
+	row := db.QueryRow("SELECT id, date, title, comment, repeat FROM scheduler WHERE id = ?", id)
+	var t Task
+	err := row.Scan(&t.ID, &t.Date, &t.Title, &t.Comment, &t.Repeat)
+	if err != nil {
+		return nil, err
+	}
+	return &t, nil
+}
+
+// UpdateTask — updates a task in the DB
+func UpdateTask(task *Task) error {
+	query := `
+		UPDATE scheduler 
+		SET date = ?, title = ?, comment = ?, repeat = ?
+		WHERE id = ?
+	`
+	res, err := db.Exec(query, task.Date, task.Title, task.Comment, task.Repeat, task.ID)
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return fmt.Errorf("incorrect id for updating task")
+	}
+	return nil
 }
