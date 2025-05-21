@@ -8,23 +8,23 @@ import (
 )
 
 func StartServer() {
-	// Значение порта по умолчанию
+	// Default port value
 	port := "7540"
 
-	// Если переменная окружения TODO_PORT задана — используем её
+	// If the TODO_PORT environment variable is set, use it
 	if envPort := os.Getenv("TODO_PORT"); envPort != "" {
 		port = envPort
 	}
 
 	api.Init()
 
-	// Файловый сервер для директории web
+	// File server for the web directory
 	fs := http.FileServer(http.Dir("./web"))
 	http.Handle("/", fs)
 
-	log.Printf("Сервер запущен на порту %s...", port)
+	log.Printf("Server started on port %s...", port)
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		log.Fatalf("Ошибка запуска сервера: %v", err)
+		log.Fatalf("Error starting server: %v", err)
 	}
 }

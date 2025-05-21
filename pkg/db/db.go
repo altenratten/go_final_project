@@ -9,6 +9,7 @@ import (
 
 var db *sql.DB
 
+// schema — SQL schema for the DB
 const schema = `
 CREATE TABLE IF NOT EXISTS scheduler (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,7 +21,7 @@ CREATE TABLE IF NOT EXISTS scheduler (
 CREATE INDEX IF NOT EXISTS idx_date ON scheduler(date);
 `
 
-// Init открывает БД и создаёт таблицу, если её нет
+// Init opens the DB and creates a table if it doesn't exist
 func Init(dbFile string) error {
 	var err error
 
@@ -29,15 +30,15 @@ func Init(dbFile string) error {
 		return err
 	}
 
-	// Проверяем, доступна ли БД
+	// Check if the DB is available
 	if err = db.Ping(); err != nil {
 		return err
 	}
 
-	// Всегда пытаемся создать таблицу (если её нет)
+	// Always try to create a table (if it doesn't exist)
 	_, err = db.Exec(schema)
 	if err != nil {
-		return errors.New("ошибка создания схемы БД: " + err.Error())
+		return errors.New("error creating DB schema: " + err.Error())
 	}
 
 	return nil

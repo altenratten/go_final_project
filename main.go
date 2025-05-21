@@ -9,17 +9,17 @@ import (
 )
 
 func main() {
-	// Получаем путь к базе данных из переменной окружения TODO_DBFILE
+	// Get database path from TODO_DBFILE environment variable
 	dbFile := os.Getenv("TODO_DBFILE")
 	if dbFile == "" {
 		dbFile = "scheduler.db"
 	}
 
-	// Инициализируем БД
+	// Initialize the DB
 	if err := db.Init(dbFile); err != nil {
-		log.Fatalf("Ошибка инициализации базы данных: %v", err)
+		log.Fatalf("Error initializing the DB: %v", err)
 	}
 
-	// Запускаем веб-сервер
+	// Start the web server
 	server.StartServer()
 }
