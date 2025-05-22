@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -108,4 +109,26 @@ func UpdateTask(task *Task) error {
 		return fmt.Errorf("incorrect id for updating task")
 	}
 	return nil
+}
+
+// DeleteTask — deletes a task from the DB
+func DeleteTask(id string) error {
+	res, err := db.Exec(`DELETE FROM scheduler WHERE id = ?`, id)
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return errors.New("task not found")
+	}
+	return nil
+}
+
+// UpdateDate — updates the date of a task in the DB
+func UpdateDate(next string, id string) error {
+	_, err := db.Exec(`UPDATE scheduler SET date = ? WHERE id = ?`, next, id)
+	return err
 }
