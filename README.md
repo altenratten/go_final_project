@@ -20,8 +20,10 @@ API содержит следующие операции:
  - Создание докер-образа
 
 Запуск из Docker происходит командой:
+```
 $ docker build -t todo:latest .
- $ docker run -v $(pwd)/scheduler.db:/app/scheduler.db -e TODO_PORT=8080 -p 8080:8080 todo
+$ docker run -v $(pwd)/scheduler.db:/app/scheduler.db -e TODO_PORT=8080 -p 8080:8080 todo
+```
 
 ---------------------------------------------------------------------------------------------------
 Проект запускается по go run . из корневой папки.
