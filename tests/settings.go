@@ -1,6 +1,6 @@
 package tests
 
-var Port = 80
+var Port = 8080
 var DBFile = "../scheduler.db"
 var FullNextDate = false
 var Search = true
