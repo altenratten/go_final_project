@@ -21,19 +21,19 @@ API содержит следующие операции:
 
 Запуск из Docker происходит командой:
 $ docker build -t todo:latest .
- $ docker run -v $(pwd)/scheduler.db:/app/scheduler.db -e TODO_PORT=80 -p 80:80 todo
+ $ docker run -v $(pwd)/scheduler.db:/app/scheduler.db -e TODO_PORT=8080 -p 8080:8080 todo
 
 ---------------------------------------------------------------------------------------------------
 Проект запускается по go run . из корневой папки.
 
 Переменные заданы в .env:
-    Порт 80. После запуска проект доступен по http://localhost/
+    Порт 8080. После запуска проект доступен по http://localhost:8080/
     Аутентификация http://localhost/login.html. Пароль albatross6-send-married
 
 ---------------------------------------------------------------------------------------------------
 В settings использовались следующие параметры:
 
-var Port = 80
+var Port = 8080
 var DBFile = "../scheduler.db"
 var FullNextDate = false
 var Search = true
