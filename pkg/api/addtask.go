@@ -8,7 +8,7 @@ import (
 	"go1f/pkg/db"
 )
 
-// addTaskHandler — обработчик добавления задач
+// addTaskHandler — handler for adding tasks
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 	var task db.Task
 

@@ -64,6 +64,8 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 	// parse the repeat rule
 	parts := strings.Split(repeat, " ")
 	switch parts[0] {
+
+	// if the rule is 'd'
 	case "d":
 		if len(parts) != 2 {
 			return "", errors.New("invalid format of rule 'd'")
