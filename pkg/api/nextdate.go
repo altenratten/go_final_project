@@ -14,6 +14,13 @@ const DateFormat = "20060102"
 
 // Web handler for /api/nextdate
 func nextDayHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Allow only GET method
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	nowStr := r.FormValue("now")
 	dateStr := r.FormValue("date")
 	repeat := r.FormValue("repeat")

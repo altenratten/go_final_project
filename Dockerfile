@@ -35,7 +35,7 @@ COPY web ./web
 COPY --from=builder /app/server /usr/local/bin/server
 
 # Expose port
-EXPOSE 80
+EXPOSE ${TODO_PORT}
 
 # Command to run the application
 CMD ["/usr/local/bin/server"]

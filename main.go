@@ -30,6 +30,12 @@ func main() {
 	if err := db.Init(dbFile); err != nil {
 		log.Fatalf("Error initializing the DB: %v", err)
 	}
+	// Ensure the DB is closed when the application exits
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("Error closing the DB: %v", err)
+		}
+	}()
 
 	// Start the web server
 	server.StartServer()

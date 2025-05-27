@@ -12,6 +12,7 @@ import (
 )
 
 var jwtKey = []byte(os.Getenv("L*%F9wV285W$wo8Zy8c*KPBoK"))
+var pass = os.Getenv("TODO_PASSWORD")
 
 type Credentials struct {
 	Password string `json:"password"`
@@ -30,13 +31,13 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	var creds Credentials
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
-		writeJson(w, map[string]string{"error": "Invalid JSON"})
+		writeJson(w, http.StatusInternalServerError, map[string]string{"error": "Invalid JSON"})
 		return
 	}
 
 	expectedPassword := os.Getenv("TODO_PASSWORD")
 	if expectedPassword == "" || creds.Password != expectedPassword {
-		writeJson(w, map[string]string{"error": "Invalid password"})
+		writeJson(w, http.StatusForbidden, map[string]string{"error": "Invalid password"})
 		return
 	}
 
@@ -53,11 +54,11 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
-		writeJson(w, map[string]string{"error": "Failed to generate token"})
+		writeJson(w, http.StatusInternalServerError, map[string]string{"error": "Failed to generate token"})
 		return
 	}
 
-	writeJson(w, map[string]string{"token": tokenString})
+	writeJson(w, http.StatusOK, map[string]string{"token": tokenString})
 }
 
 func generateHash(input string) string {
@@ -67,7 +68,6 @@ func generateHash(input string) string {
 // Middleware for authentication
 func auth(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		pass := os.Getenv("TODO_PASSWORD")
 		if pass == "" {
 			// If no password is set, allow access
 			next(w, r)

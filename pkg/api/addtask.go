@@ -10,40 +10,47 @@ import (
 
 // addTaskHandler — handler for adding tasks
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
+
+	// Allow only POST method
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
 	var task db.Task
 
 	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
-		writeJson(w, map[string]string{"error": "невалидный JSON"})
+		writeJson(w, http.StatusInternalServerError, map[string]string{"error": "error parsing JSON"})
 		return
 	}
 
 	if task.Title == "" {
-		writeJson(w, map[string]string{"error": "не указан заголовок задачи"})
+		writeJson(w, http.StatusBadRequest, map[string]string{"error": "title not specified"})
 		return
 	}
 
 	if err := checkDate(&task); err != nil {
-		writeJson(w, map[string]string{"error": err.Error()})
+		writeJson(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
 	id, err := db.AddTask(&task)
 	if err != nil {
-		writeJson(w, map[string]string{"error": err.Error()})
+		writeJson(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
-	writeJson(w, map[string]any{"id": id})
+	writeJson(w, http.StatusOK, map[string]any{"id": id})
 }
 
 func checkDate(task *db.Task) error {
 	now := time.Now()
 
 	if task.Date == "" {
-		task.Date = now.Format("20060102")
+		task.Date = now.Format(DateFormat)
 	}
 
-	t, err := time.Parse("20060102", task.Date)
+	t, err := time.Parse(DateFormat, task.Date)
 	if err != nil {
 		return err
 	}
@@ -58,7 +65,7 @@ func checkDate(task *db.Task) error {
 
 	if afterNow(now, t) {
 		if task.Repeat == "" {
-			task.Date = now.Format("20060102")
+			task.Date = now.Format(DateFormat)
 		} else {
 			task.Date = next
 		}

@@ -11,17 +11,22 @@ type TasksResp struct {
 
 // Web handler for /api/tasks
 func getTasksHandler(w http.ResponseWriter, r *http.Request) {
+	// Allow only GET method
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	search := r.URL.Query().Get("search")
 
 	tasks, err := db.Tasks(50, search)
 	if err != nil {
-		writeJson(w, map[string]string{"error": err.Error()})
+		writeJson(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 	if tasks == nil {
 		tasks = []*db.Task{}
 	}
-	writeJson(w, struct {
+	writeJson(w, http.StatusOK, struct {
 		Tasks []*db.Task `json:"tasks"`
 	}{Tasks: tasks})
 }

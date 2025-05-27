@@ -30,6 +30,6 @@ func taskHandler(w http.ResponseWriter, r *http.Request) {
 		deleteTaskHandler(w, r)
 	// method not allowed
 	default:
-		writeJson(w, map[string]string{"error": "method not allowed"})
+		writeJson(w, http.StatusMethodNotAllowed, map[string]string{"error": "method not allowed"})
 	}
 }

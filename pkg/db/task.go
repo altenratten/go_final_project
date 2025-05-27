@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+// DateFormat — format for the date
+const DateFormat = "20060102"
+const baseLimit = 50
+
 type Task struct {
 	ID      string `json:"id"`
 	Date    string `json:"date"`
@@ -32,7 +36,6 @@ func AddTask(task *Task) (int64, error) {
 
 // Tasks — gets tasks from the DB
 func Tasks(limit int, search string) ([]*Task, error) {
-	const baseLimit = 50
 	if limit <= 0 || limit > baseLimit {
 		limit = baseLimit
 	}
@@ -66,6 +69,11 @@ func Tasks(limit int, search string) ([]*Task, error) {
 		}
 		tasks = append(tasks, &t)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return tasks, nil
 }
 
@@ -75,14 +83,13 @@ func parseSearchDate(input string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return t.Format("20060102"), nil
+	return t.Format(DateFormat), nil
 }
 
 // GetTask — gets a task from the DB
 func GetTask(id string) (*Task, error) {
-	row := db.QueryRow("SELECT id, date, title, comment, repeat FROM scheduler WHERE id = ?", id)
 	var t Task
-	err := row.Scan(&t.ID, &t.Date, &t.Title, &t.Comment, &t.Repeat)
+	err := db.QueryRow("SELECT id, date, title, comment, repeat FROM scheduler WHERE id = ?", id).Scan(&t.ID, &t.Date, &t.Title, &t.Comment, &t.Repeat)
 	if err != nil {
 		return nil, err
 	}
